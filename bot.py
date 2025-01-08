@@ -1,5 +1,8 @@
 from javascript import require, On, off
 mineflayer = require('mineflayer')
+enums = require('minecraft-data')
+
+MCVersionData = enums("1.19")
 
 
 class MCbot:
@@ -7,12 +10,12 @@ class MCbot:
         self.bot_args = {
             "host": "localhost",
             "port": 3000,
-            "version": "1.19.4",
             "username": bot_name,
             "hiddenErrors": False
         }
         self.reconnect = True
         self.bot_name = bot_name
+        MCVersionData = self.version
         self.bot = mineflayer.createBot(self.bot_args)
         self.start_bot()
 
@@ -21,6 +24,7 @@ class MCbot:
         # Create the bot instance
         print("starting bot")
         self.start_events()
+
 
     def start_events(self):
         @On(self.bot, "login")
@@ -44,10 +48,24 @@ class MCbot:
             if messageposition == "chat" and "quit" in message:
                 self.reconnect = False
                 this.quit()
+            
+            # Get warps from chat to look for shopping places, do later maybe hashmap to check 
+            # off warp locations and automatically resume where left off incase dc/death
+            elif messageposition == "chat" and "#PLACE HOLDER PARSE FOR WAPR HERE" in message:
+                pass
         
+        # Automatically respawn when dies
         @On(self.bot, "death")
         def death(this):
-            self.respawn()
+            self.bot.respawn()
+    
+        
+        @On(self.bot, "health")
+        def health(this):
+            if self.bot.food < 6:
+                #Hold any foot item
+                self.bot.consume()
+
 
         @On(self.bot, "end")
         def end(this, reason):
@@ -57,8 +75,20 @@ class MCbot:
             off(self.bot, "login", login)
             off(self.bot, "kicked", kicked)
             off(self.bot, "messagestr", messagestr)
+            off(self.bot, "health",health)
             off(self.bot, "end", end)
 
             if self.reconnect:
                 print("RESTARTING")
                 self.start_bot()
+    #Reads a sign with plain text
+
+    def read_sign(block):
+        return block.getSignText()
+    
+    def find_signs(self):
+        #might need to use block ID
+        signs = self.bot.findBlocks(match = "sign")
+
+        for sign in signs:
+            print(self.read_sign(sign))
