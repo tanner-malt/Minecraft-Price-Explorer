@@ -92,3 +92,11 @@ class MCbot:
 
         for sign in signs:
             print(self.read_sign(sign))
+
+    def chestShopParser(sign_text):
+        # Chest Shop format
+        # 1st Line Name
+        # 2nd Line amount of item
+        # 3rd Line, B 10 : S 5 is buy for 10, sell for 5
+        # 4th line, item name
+        pass
