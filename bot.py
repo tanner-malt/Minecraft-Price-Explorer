@@ -13,20 +13,20 @@ class MCbot:
         }
         self.reconnect = True
         self.bot_name = bot_name
+        self.bot = mineflayer.createBot(self.bot_args)
         self.start_bot()
 
     # Event Listeners
     def start_bot(self):
         # Create the bot instance
         print("starting bot")
-        self.bot = mineflayer.createBot(self.bot_args)
         self.start_events()
 
     def start_events(self):
         @On(self.bot, "login")
         def login(this):
-            bot_socket = self.bot._client.socket
-            print(f"Logged in to {bot_socket.server if bot_socket.server else bot_socket.host}")
+            self.bot_socket = self.bot._client.socket
+            print(f"Logged in to {self.bot_socket.server if self.bot_socket.server else self.bot_socket.host}")
 
         @On(self.bot, "spawn")
         def spawn(bot):
