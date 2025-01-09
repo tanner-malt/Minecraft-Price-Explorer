@@ -13,9 +13,9 @@ class MCbot:
             "username": bot_name,
             "hiddenErrors": False
         }
+        
         self.reconnect = True
         self.bot_name = bot_name
-        MCVersionData = self.version
         self.bot = mineflayer.createBot(self.bot_args)
         self.start_bot()
 
