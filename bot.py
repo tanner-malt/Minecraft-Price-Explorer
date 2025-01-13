@@ -1,5 +1,7 @@
 from javascript import require, On, off
 mineflayer = require('mineflayer')
+movePlugin = require('mineflayer-pathfinder')
+
 enums = require('minecraft-data')
 
 MCVersionData = enums("1.19")
@@ -44,14 +46,10 @@ class MCbot:
                 print(f"Kicked from server while connecting: {reason}")
 
         @On(self.bot, "messagestr")
-        def messagestr(this, message, messageposition):
-            if messageposition == "chat" and "quit" in message:
-                self.reconnect = False
-                this.quit()
-            
+        def messagestr(this, message, messageposition):            
             # Get warps from chat to look for shopping places, do later maybe hashmap to check 
             # off warp locations and automatically resume where left off incase dc/death
-            elif messageposition == "chat" and "#PLACE HOLDER PARSE FOR WAPR HERE" in message:
+            if messageposition == "chat" and "#PLACE HOLDER PARSE FOR WAPR HERE" in message:
                 pass
         
         # Automatically respawn when dies
