@@ -1,6 +1,7 @@
 from javascript import require, On, off
 mineflayer = require('mineflayer')
 movePlugin = require('mineflayer-pathfinder')
+vec3 = require('vec3')
 
 enums = require('minecraft-data')
 
