@@ -8,14 +8,14 @@ MCVersionData = enums("1.19")
 
 
 class MCbot:
-    def __init__(self, bot_name):
+    def __init__(self, bot_name, version):
         self.bot_args = {
             "host": "localhost",
             "port": 3000,
             "username": bot_name,
-            "hiddenErrors": False
+            "hiddenErrors": False,
+            "version": version
         }
-        
         self.reconnect = True
         self.bot_name = bot_name
         self.bot = mineflayer.createBot(self.bot_args)
@@ -26,7 +26,6 @@ class MCbot:
         # Create the bot instance
         print("starting bot")
         self.start_events()
-
 
     def start_events(self):
         @On(self.bot, "login")
