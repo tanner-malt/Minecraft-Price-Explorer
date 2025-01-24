@@ -2,7 +2,7 @@ from javascript import require, On, off
 mineflayer = require('mineflayer')
 movePlugin = require('mineflayer-pathfinder')
 vec3 = require('vec3')
-
+Entity = require("prismarine-entity")('1.19')
 enums = require('minecraft-data')
 
 MCVersionData = enums("1.19")
@@ -45,14 +45,14 @@ class MCbot:
                 print(f"Kicked from server while connecting: {reason}")
 
         @On(self.bot, "messagestr")
-        def messagestr(this, message: str, messageposition):            
+        def messagestr(this, message: str, messageposition, *args):            
             """
             This will look in chat whenever there is a message, and look for the token #BOTCMDWARP, and then parse the message accordingly
             """
-            if messageposition == "chat" and "#BOTCMDWARP" in message:
+            if messageposition == "chat" and "#BOTCMDWARP" in message and "oujiderebf" in message:
                 words = message.split(" ")
-                last_wrd = words[:-1]
-                self.bot.chat(f"/warp {last_wrd}")
+                last_wrd = words[-1]
+                self.bot.chat(f"warp {last_wrd}")
                 #BOTCMDWARP WARP <LOCATION>
                 #bot types in chat 
                 #"/warp <LOCATION>"
@@ -63,6 +63,18 @@ class MCbot:
             if self.bot.food < 6:
                 #Hold any foot item
                 self.bot.consume()
+
+        @On(self.bot, "entityMoved")
+        def entityMoved(this, entity):
+            """
+            This will check for when entitites move, we will check if it is the desired player, if so the bot will follow like a good puppy.
+            """
+            follow_leaders = ["oujiderebf"]
+            if entity.type == "player":
+                if entity.username in follow_leaders:
+                    #entity.position
+
+                    pass
 
 
         @On(self.bot, "end")
@@ -79,6 +91,8 @@ class MCbot:
             if self.reconnect:
                 print("RESTARTING")
                 self.start_bot()
+
+
     #Reads a sign with plain text
 
     def read_sign(block):
