@@ -7,5 +7,5 @@ mineflayer = require('mineflayer')
 if __name__ == "__main__":
     clone_MCData("1.19")
 
-    bot = MCbot('tester',"1.19")
+    bot = MCbot('tester')
     bot.start_bot()

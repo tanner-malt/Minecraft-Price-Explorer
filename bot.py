@@ -8,13 +8,12 @@ MCVersionData = enums("1.19")
 
 
 class MCbot:
-    def __init__(self, bot_name, version):
+    def __init__(self, bot_name):
         self.bot_args = {
             "host": "localhost",
             "port": 3000,
             "username": bot_name,
             "hiddenErrors": False,
-            "version": version
         }
         self.reconnect = True
         self.bot_name = bot_name
@@ -45,16 +44,17 @@ class MCbot:
                 print(f"Kicked from server while connecting: {reason}")
 
         @On(self.bot, "messagestr")
-        def messagestr(this, message, messageposition):            
-            # Get warps from chat to look for shopping places, do later maybe hashmap to check 
-            # off warp locations and automatically resume where left off incase dc/death
-            if messageposition == "chat" and "#PLACE HOLDER PARSE FOR WAPR HERE" in message:
-                pass
-        
-        # Automatically respawn when dies
-        @On(self.bot, "death")
-        def death(this):
-            self.bot.respawn()
+        def messagestr(this, message: str, messageposition):            
+            """
+            This will look in chat whenever there is a message, and look for the token #BOTCMDWARP, and then parse the message accordingly
+            """
+            if messageposition == "chat" and "#BOTCMDWARP" in message:
+                words = message.split(" ")
+                last_wrd = words[:-1]
+                self.bot.chat(f"/warp {last_wrd}")
+                #BOTCMDWARP WARP <LOCATION>
+                #bot types in chat 
+                #"/warp <LOCATION>"
     
         
         @On(self.bot, "health")
