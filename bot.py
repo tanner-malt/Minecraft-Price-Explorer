@@ -52,7 +52,7 @@ class MCbot:
             if messageposition == "chat" and "#BOTCMDWARP" in message and "oujiderebf" in message:
                 words = message.split(" ")
                 last_wrd = words[-1]
-                self.bot.chat(f"warp {last_wrd}")
+                self.bot.chat(f"/warp {last_wrd}")
                 #BOTCMDWARP WARP <LOCATION>
                 #bot types in chat 
                 #"/warp <LOCATION>"
