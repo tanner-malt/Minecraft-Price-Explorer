@@ -1,6 +1,6 @@
 from javascript import require, On, off
-from bot import MCbot
-from helper import clone_MCData
+from src.bot import MCbot
+from src.helper import clone_MCData
 mineflayer = require('mineflayer')
 
 

@@ -62,7 +62,10 @@ class MCbot:
         def health(this):
             if self.bot.food < 6:
                 #Hold any foot item
-                self.bot.consume()
+                try:
+                    self.bot.consume()
+                except Exception as e:
+                    print(f"Error consuming food: {e}")
 
         @On(self.bot, "entityMoved")
         def entityMoved(this, entity):
@@ -72,9 +75,7 @@ class MCbot:
             follow_leaders = ["oujiderebf"]
             if entity.type == "player":
                 if entity.username in follow_leaders:
-                    #entity.position
-
-                    pass
+                    self.bot.pathfinder.setGoal(movePlugin.goals.GoalFollow(entity, 1))
 
 
         @On(self.bot, "end")
@@ -82,11 +83,9 @@ class MCbot:
             print(f"Disconnected: {reason}")
 
             # Turning Off listeners
-            off(self.bot, "login", login)
-            off(self.bot, "kicked", kicked)
-            off(self.bot, "messagestr", messagestr)
-            off(self.bot, "health",health)
-            off(self.bot, "end", end)
+            events = ["login", "kicked", "messagestr", "health", "end"]
+            for event in events:
+                off(self.bot, event, locals()[event])
 
             if self.reconnect:
                 print("RESTARTING")
@@ -95,20 +94,55 @@ class MCbot:
 
     #Reads a sign with plain text
 
-    def read_sign(block):
-        return block.getSignText()
-    
     def find_signs(self):
         #might need to use block ID
-        signs = self.bot.findBlocks(match = "sign")
+        signs = self.bot.findBlocks(match=lambda block: block.name.endswith("sign"))
 
         for sign in signs:
-            print(self.read_sign(sign))
+            sign_val = self.read_sign(sign)
+            if sign_val ==  None:
+                parsed_sign = self.chestShopParser(sign_val)
+                if parsed_sign is not None:
+                    print(f"Parsed sign: {parsed_sign}")
+                else:
+                    print("Invalid sign format")
 
     def chestShopParser(sign_text):
-        # Chest Shop format
-        # 1st Line Name
-        # 2nd Line amount of item
-        # 3rd Line, B 10 : S 5 is buy for 10, sell for 5
-        # 4th line, item name
-        pass
+        lines = sign_text.split("\n")
+        if len(lines) != 4:
+            return None  # Invalid format
+
+        name = lines[0].strip()
+        amount = lines[1].strip()
+        prices = lines[2].strip()
+        item = lines[3].strip()
+
+        # Validate amount (must be a positive integer)
+        if not amount.isdigit() or int(amount) <= 0:
+            return None
+
+        # Validate prices (must follow "B <buy_price>:<sell_price> S" or similar)
+        buy_price = None
+        sell_price = None
+        if "B" in prices:
+            try:
+                buy_price = float(prices.split("B")[1].split(":")[0].strip())
+            except (IndexError, ValueError):
+                return None
+        if "S" in prices:
+            try:
+                sell_price = float(prices.split("S")[1].strip())
+            except (IndexError, ValueError):
+                return None
+
+        # Validate item (must not be empty)
+        if not item:
+            return None
+
+        return {
+            "name": name,
+            "amount": int(amount),
+            "buy_price": buy_price,
+            "sell_price": sell_price,
+            "item": item
+        }
