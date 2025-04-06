@@ -19,6 +19,10 @@ class MCbot:
         self.reconnect = True
         self.bot_name = bot_name
         self.bot = mineflayer.createBot(self.bot_args)
+
+        # Load the pathfinder plugin
+        self.bot.loadPlugin(movePlugin.pathfinder)
+
         self.start_bot()
 
     # Event Listeners
@@ -32,6 +36,13 @@ class MCbot:
         def login(this):
             self.bot_socket = self.bot._client.socket
             print(f"Logged in to {self.bot_socket.server if self.bot_socket.server else self.bot_socket.host}")
+
+            # Check if the bot is dead and respawn if necessary
+            if not self.bot.isAlive:
+                print("Bot is dead. Respawning...")
+                self.bot.spawn()
+            else:
+                print("Bot is alive and ready.")
 
         @On(self.bot, "spawn")
         def spawn(bot):
@@ -70,13 +81,15 @@ class MCbot:
         @On(self.bot, "entityMoved")
         def entityMoved(this, entity):
             """
-            This will check for when entitites move, we will check if it is the desired player, if so the bot will follow like a good puppy.
+            This will check for when entities move, and if it is the desired player, the bot will follow.
             """
             follow_leaders = ["oujiderebf"]
-            if entity.type == "player":
-                if entity.username in follow_leaders:
-                    self.bot.pathfinder.setGoal(movePlugin.goals.GoalFollow(entity, 1))
-
+            if entity.type == "player" and entity.username in follow_leaders:
+                if self.bot.pathfinder:
+                    goal = movePlugin.goals.GoalFollow(entity, 1)
+                    self.bot.pathfinder.setGoal(goal)
+                else:
+                    print("Pathfinder plugin is not initialized.")
 
         @On(self.bot, "end")
         def end(this, reason):

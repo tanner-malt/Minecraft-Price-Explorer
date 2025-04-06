@@ -1,6 +1,10 @@
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 from javascript import require, On, off
-from src.bot import MCbot
-from src.helper import clone_MCData
+from bot import MCbot
+from helper import clone_MCData
 mineflayer = require('mineflayer')
 
 
